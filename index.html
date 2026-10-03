@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application & Transport Layer Protocol Visualizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="header-left">
+      <div class="header-badge">BTech Computer Networks Project</div>
+      <h1>Application &amp; Transport Layer Protocol Visualizer</h1>
+      <p>Interactive visualization of DNS · HTTP · SMTP · TCP · UDP · Browsing &amp; Streaming Scenarios</p>
+    </div>
+    <div class="osi-stack">
+      <div class="osi-layer layer7 active-layer">Layer 7 · Application</div>
+      <div class="osi-layer layer4 active-layer">Layer 4 · Transport</div>
+      <div class="osi-layer layer3">Layer 3 · Network</div>
+      <div class="osi-layer layer2">Layer 2 · Data Link</div>
+      <div class="osi-layer layer1">Layer 1 · Physical</div>
+    </div>
+  </header>
+
+  <!-- ===== TOP NAV TABS ===== -->
+  <nav class="top-nav">
+    <button class="nav-btn active" data-section="application">🌐 Application Layer</button>
+    <button class="nav-btn" data-section="transport">⚡ Transport Layer</button>
+    <button class="nav-btn" data-section="scenarios">🔁 Practical Scenarios</button>
+    <button class="nav-btn" data-section="compare">📊 Protocol Comparison</button>
+  </nav>
+
+  <!-- ============================= -->
+  <!-- SECTION 1: APPLICATION LAYER  -->
+  <!-- ============================= -->
+  <section id="sec-application" class="section active-section">
+    <div class="section-header">
+      <div>
+        <span class="layer-pill">OSI Layer 7</span>
+        <h2>Application Layer Protocols</h2>
+        <p>Select a protocol to visualize its packet exchange flow</p>
+      </div>
+    </div>
+
+    <div class="proto-selector">
+      <button class="proto-btn active" data-proto="dns">🔍 DNS</button>
+      <button class="proto-btn" data-proto="http">📄 HTTP</button>
+      <button class="proto-btn" data-proto="smtp">✉️ SMTP</button>
+    </div>
+
+    <!-- DNS Panel -->
+    <div id="proto-dns" class="proto-panel active-panel">
+      <div class="two-col">
+        <!-- Left: Info + Trigger -->
+        <div class="panel info-panel">
+          <div class="panel-head">
+            <span class="proto-tag dns-tag">DNS — RFC 1035</span>
+            <span class="port-tag">UDP Port 53</span>
+          </div>
+          <p class="proto-desc">
+            The <strong>Domain Name System</strong> translates human-readable hostnames (e.g., <code>www.google.com</code>) into IP addresses.
+            It operates as a distributed hierarchical database.
+          </p>
+          <div class="info-grid">
+            <div class="info-item"><span class="info-label">Transport</span><span class="info-val">UDP / TCP</span></div>
+            <div class="info-item"><span class="info-label">Port</span><span class="info-val">53</span></div>
+            <div class="info-item"><span class="info-label">Message Types</span><span class="info-val">Query / Response</span></div>
+            <div class="info-item"><span class="info-label">Record Types</span><span class="info-val">A, AAAA, MX, CNAME, NS</span></div>
+          </div>
+          <div class="input-group">
+            <label>Domain to Resolve</label>
+            <input id="dnsInput" value="www.example.com" placeholder="e.g. www.google.com">
+            <button class="run-btn dns-run" id="runDns">🔍 Resolve Domain</button>
+          </div>
+          <div id="dnsStatus" class="status-bar hidden"></div>
+        </div>
+
+        <!-- Right: Visualization -->
+        <div class="panel viz-panel">
+          <div class="panel-head">
+            <span class="panel-title-text">DNS Packet Flow Visualization</span>
+            <span id="dnsStepCounter" class="step-counter">0 / 0</span>
+          </div>
+          <div class="flow-stage" id="dnsFlowStage">
+            <div class="flow-node">
+              <div class="node-icon">💻</div>
+              <div class="node-label">Client</div>
+              <div class="node-sub">192.168.1.10</div>
+            </div>
+            <div class="flow-wire" id="dnsWire">
+              <div class="empty-prompt">Click "Resolve Domain" to start</div>
+            </div>
+            <div class="flow-node">
+              <div class="node-icon">🖥️</div>
+              <div class="node-label">DNS Server</div>
+              <div class="node-sub">8.8.8.8</div>
+            </div>
+          </div>
+          <div id="dnsMessages" class="message-scroll"></div>
+          <div class="flow-controls hidden" id="dnsControls">
+            <button class="ctrl-btn" id="dnsPrev">◀ Prev</button>
+            <button class="ctrl-btn primary" id="dnsPause">⏸ Pause</button>
+            <button class="ctrl-btn" id="dnsNext">Next ▶</button>
+            <button class="ctrl-btn" id="dnsReplay">↻ Replay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HTTP Panel -->
+    <div id="proto-http" class="proto-panel">
+      <div class="two-col">
+        <div class="panel info-panel">
+          <div class="panel-head">
+            <span class="proto-tag http-tag">HTTP — RFC 9110</span>
+            <span class="port-tag">TCP Port 80 / 443</span>
+          </div>
+          <p class="proto-desc">
+            <strong>HyperText Transfer Protocol</strong> is the foundation of data communication on the World Wide Web.
+            It follows a request-response model between clients (browsers) and web servers.
+          </p>
+          <div class="info-grid">
+            <div class="info-item"><span class="info-label">Transport</span><span class="info-val">TCP</span></div>
+            <div class="info-item"><span class="info-label">Port</span><span class="info-val">80 (HTTP) / 443 (HTTPS)</span></div>
+            <div class="info-item"><span class="info-label">Methods</span><span class="info-val">GET, POST, PUT, DELETE</span></div>
+            <div class="info-item"><span class="info-label">Status Codes</span><span class="info-val">200 OK, 404, 301, 500...</span></div>
+          </div>
+          <div class="input-group">
+            <label>URL to Request</label>
+            <input id="httpInput" value="https://www.example.com/index.html" placeholder="e.g. https://www.example.com">
+            <label>HTTP Method</label>
+            <select id="httpMethod">
+              <option>GET</option>
+              <option>POST</option>
+              <option>HEAD</option>
+            </select>
+            <button class="run-btn http-run" id="runHttp">📄 Send HTTP Request</button>
+          </div>
+          <div id="httpStatus" class="status-bar hidden"></div>
+        </div>
+        <div class="panel viz-panel">
+          <div class="panel-head">
+            <span class="panel-title-text">HTTP Request/Response Flow</span>
+            <span id="httpStepCounter" class="step-counter">0 / 0</span>
+          </div>
+          <div class="flow-stage" id="httpFlowStage">
+            <div class="flow-node">
+              <div class="node-icon">🌐</div>
+              <div class="node-label">Browser</div>
+              <div class="node-sub">Client App</div>
+            </div>
+            <div class="flow-wire" id="httpWire">
+              <div class="empty-prompt">Click "Send HTTP Request" to start</div>
+            </div>
+            <div class="flow-node">
+              <div class="node-icon">🖥️</div>
+              <div class="node-label">Web Server</div>
+              <div class="node-sub">93.184.216.34</div>
+            </div>
+          </div>
+          <div id="httpMessages" class="message-scroll"></div>
+          <div class="flow-controls hidden" id="httpControls">
+            <button class="ctrl-btn" id="httpPrev">◀ Prev</button>
+            <button class="ctrl-btn primary" id="httpPause">⏸ Pause</button>
+            <button class="ctrl-btn" id="httpNext">Next ▶</button>
+            <button class="ctrl-btn" id="httpReplay">↻ Replay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMTP Panel -->
+    <div id="proto-smtp" class="proto-panel">
+      <div class="two-col">
+        <div class="panel info-panel">
+          <div class="panel-head">
+            <span class="proto-tag smtp-tag">SMTP — RFC 5321</span>
+            <span class="port-tag">TCP Port 25 / 587</span>
+          </div>
+          <p class="proto-desc">
+            <strong>Simple Mail Transfer Protocol</strong> is used for sending email messages between servers and from client to server.
+            It uses a series of commands and responses.
+          </p>
+          <div class="info-grid">
+            <div class="info-item"><span class="info-label">Transport</span><span class="info-val">TCP</span></div>
+            <div class="info-item"><span class="info-label">Port</span><span class="info-val">25 / 587 (Submission)</span></div>
+            <div class="info-item"><span class="info-label">Commands</span><span class="info-val">EHLO, MAIL FROM, RCPT TO, DATA, QUIT</span></div>
+            <div class="info-item"><span class="info-label">Response Codes</span><span class="info-val">220, 250, 354, 221</span></div>
+          </div>
+          <div class="input-group">
+            <label>From</label>
+            <input id="smtpFrom" value="student@college.edu">
+            <label>To</label>
+            <input id="smtpTo" value="professor@university.edu">
+            <label>Subject</label>
+            <input id="smtpSubj" value="Computer Networks Assignment">
+            <button class="run-btn smtp-run" id="runSmtp">✉️ Send Email</button>
+          </div>
+          <div id="smtpStatus" class="status-bar hidden"></div>
+        </div>
+        <div class="panel viz-panel">
+          <div class="panel-head">
+            <span class="panel-title-text">SMTP Transaction Flow</span>
+            <span id="smtpStepCounter" class="step-counter">0 / 0</span>
+          </div>
+          <div class="flow-stage" id="smtpFlowStage">
+            <div class="flow-node">
+              <div class="node-icon">📧</div>
+              <div class="node-label">Mail Client</div>
+              <div class="node-sub">Sender MUA</div>
+            </div>
+            <div class="flow-wire" id="smtpWire">
+              <div class="empty-prompt">Click "Send Email" to start</div>
+            </div>
+            <div class="flow-node">
+              <div class="node-icon">📬</div>
+              <div class="node-label">SMTP Server</div>
+              <div class="node-sub">Mail Transfer Agent</div>
+            </div>
+          </div>
+          <div id="smtpMessages" class="message-scroll"></div>
+          <div class="flow-controls hidden" id="smtpControls">
+            <button class="ctrl-btn" id="smtpPrev">◀ Prev</button>
+            <button class="ctrl-btn primary" id="smtpPause">⏸ Pause</button>
+            <button class="ctrl-btn" id="smtpNext">Next ▶</button>
+            <button class="ctrl-btn" id="smtpReplay">↻ Replay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ -->
+  <!-- SECTION 2: TRANSPORT LAYER   -->
+  <!-- ============================ -->
+  <section id="sec-transport" class="section">
+    <div class="section-header">
+      <div>
+        <span class="layer-pill">OSI Layer 4</span>
+        <h2>Transport Layer Protocols</h2>
+        <p>Visualize TCP connection lifecycle and UDP connectionless transmission</p>
+      </div>
+    </div>
+
+    <div class="proto-selector">
+      <button class="proto-btn active" data-proto="tcp">🔗 TCP</button>
+      <button class="proto-btn" data-proto="udp">⚡ UDP</button>
+    </div>
+
+    <!-- TCP Panel -->
+    <div id="proto-tcp" class="proto-panel active-panel">
+      <div class="tcp-info-bar">
+        <div class="tcp-prop"><span class="prop-icon">🤝</span><span class="prop-label">Connection-Oriented</span></div>
+        <div class="tcp-prop"><span class="prop-icon">✅</span><span class="prop-label">Reliable Delivery</span></div>
+        <div class="tcp-prop"><span class="prop-icon">📋</span><span class="prop-label">In-Order Delivery</span></div>
+        <div class="tcp-prop"><span class="prop-icon">🔄</span><span class="prop-label">Flow Control</span></div>
+        <div class="tcp-prop"><span class="prop-icon">⚡</span><span class="prop-label">Congestion Control</span></div>
+      </div>
+
+      <div class="two-col">
+        <!-- TCP Animation Canvas -->
+        <div class="panel anim-panel">
+          <div class="panel-head">
+            <div class="head-left">
+              <span class="pulse-dot"></span>
+              <span class="panel-title-text" id="tcpStageTitle">TCP 3-Way Handshake + Data Transfer</span>
+            </div>
+            <div class="head-right">
+              <span id="tcpConnBadge" class="conn-badge connecting">CONNECTING</span>
+              <span id="tcpStepBadge" class="step-badge">Step 0/7</span>
+            </div>
+          </div>
+
+          <!-- The main animation stage -->
+          <div class="anim-stage" id="tcpStage">
+            <!-- Client Node -->
+            <div class="anim-node" id="tcpClientNode">
+              <div class="node-emoji">💻</div>
+              <div class="node-name">Client</div>
+              <div class="node-addr">192.168.1.10</div>
+              <div class="node-port-info">Port: 52418</div>
+              <div class="node-state-badge" id="tcpClientState">CLOSED</div>
+            </div>
+
+            <!-- Wire Region -->
+            <div class="wire-region" id="tcpWireRegion">
+              <div class="wire-label">Forward →</div>
+              <div class="wire-track forward-track">
+                <div class="wire-line"></div>
+              </div>
+              <div class="wire-label reverse-lbl">← Reverse</div>
+              <div class="wire-track reverse-track">
+                <div class="wire-line"></div>
+              </div>
+              <!-- Flying packet -->
+              <div id="tcpPacket" class="fly-packet hidden">
+                <div id="tcpPktLabel" class="fly-label">SYN</div>
+                <div id="tcpPktMeta" class="fly-meta">Seq=0</div>
+              </div>
+            </div>
+
+            <!-- Server Node -->
+            <div class="anim-node" id="tcpServerNode">
+              <div class="node-emoji">🖥️</div>
+              <div class="node-name">Web Server</div>
+              <div class="node-addr">93.184.216.34</div>
+              <div class="node-port-info">Port: 80 (HTTP)</div>
+              <div class="node-state-badge" id="tcpServerState">LISTEN</div>
+            </div>
+          </div>
+
+          <!-- TCP Step Timeline -->
+          <div class="step-timeline" id="tcpTimeline"></div>
+
+          <!-- TCP Controls -->
+          <div class="ctrl-bar">
+            <div class="ctrl-group">
+              <button class="ctrl-btn" id="tcpPrev">◀ Prev</button>
+              <button class="ctrl-btn primary" id="tcpPlayPause">⏸ Pause</button>
+              <button class="ctrl-btn" id="tcpNext">Next ▶</button>
+              <button class="ctrl-btn" id="tcpReplay">↻ Replay</button>
+            </div>
+            <div class="speed-ctrl">
+              <span>Speed:</span>
+              <button class="spd-btn active" id="tcpSpeed1x">1x</button>
+              <button class="spd-btn" id="tcpSpeed2x">2x</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TCP Inspector -->
+        <div class="panel inspector-panel" id="tcpInspector">
+          <div class="panel-head">
+            <span class="panel-title-text">Segment Inspector</span>
+            <span class="badge-proto tcp-badge">TCP Segment</span>
+          </div>
+          <div class="insp-step-card">
+            <div class="insp-step-title" id="tcpInspTitle">Step 1: SYN — Client → Server</div>
+            <div class="insp-direction client-dir" id="tcpInspDir">Client → Server</div>
+            <p class="insp-desc" id="tcpInspDesc">Client initiates the connection by sending a SYN segment with an Initial Sequence Number (ISN).</p>
+          </div>
+          <div class="header-breakdown">
+            <div class="breakdown-title">TCP Header Fields <span class="breakdown-size">20 Bytes</span></div>
+            <div class="field-grid" id="tcpFieldGrid"></div>
+          </div>
+          <div class="edu-callout">
+            <div class="callout-icon">💡</div>
+            <div>
+              <strong id="tcpEduTitle">3-Way Handshake</strong>
+              <p id="tcpEduBody">SYN → SYN-ACK → ACK establishes a reliable, bidirectional connection before any data is sent. This ensures both parties are ready and sequence numbers are synchronized.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UDP Panel -->
+    <div id="proto-udp" class="proto-panel">
+      <div class="udp-info-bar">
+        <div class="tcp-prop udp-prop"><span class="prop-icon">⚡</span><span class="prop-label">Connectionless</span></div>
+        <div class="tcp-prop udp-prop"><span class="prop-icon">🚀</span><span class="prop-label">Low Latency</span></div>
+        <div class="tcp-prop udp-prop"><span class="prop-icon">📦</span><span class="prop-label">Best-Effort Delivery</span></div>
+        <div class="tcp-prop udp-prop"><span class="prop-icon">🔇</span><span class="prop-label">No Handshake</span></div>
+        <div class="tcp-prop udp-prop"><span class="prop-icon">🎮</span><span class="prop-label">Used for Streaming</span></div>
+      </div>
+
+      <div class="udp-no-handshake-callout">
+        <div class="no-hs-icon">🚫🤝</div>
+        <div>
+          <strong>UDP is Connectionless — No Handshake Required!</strong>
+          <p>Unlike TCP, UDP sends datagrams directly without establishing a connection first. This makes it faster but unreliable. Lost packets are NOT retransmitted.</p>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel anim-panel">
+          <div class="panel-head">
+            <div class="head-left">
+              <span class="pulse-dot udp-pulse"></span>
+              <span class="panel-title-text">UDP Datagram Transmission</span>
+            </div>
+            <div class="head-right">
+              <span class="conn-badge stateless">STATELESS</span>
+              <span id="udpStepBadge" class="step-badge">Step 0/4</span>
+            </div>
+          </div>
+
+          <div class="anim-stage" id="udpStage">
+            <div class="anim-node">
+              <div class="node-emoji">📺</div>
+              <div class="node-name">Sender</div>
+              <div class="node-addr">192.168.1.10</div>
+              <div class="node-port-info">Ephemeral Port</div>
+              <div class="node-state-badge udp-state">SENDING</div>
+            </div>
+
+            <div class="wire-region udp-wire-region" id="udpWireRegion">
+              <div class="wire-label">UDP Datagram →</div>
+              <div class="wire-track udp-track">
+                <div class="wire-line udp-wire-line"></div>
+              </div>
+              <div class="udp-no-ack-label">✗ No ACK — Fire and Forget!</div>
+              <div id="udpPacket" class="fly-packet udp-pkt hidden">
+                <div id="udpPktLabel" class="fly-label">UDP</div>
+                <div id="udpPktMeta" class="fly-meta">Data</div>
+              </div>
+            </div>
+
+            <div class="anim-node">
+              <div class="node-emoji">📡</div>
+              <div class="node-name">Receiver</div>
+              <div class="node-addr">10.0.0.5</div>
+              <div class="node-port-info">Port: 5004 (RTP)</div>
+              <div class="node-state-badge udp-state" id="udpRecvState">WAITING</div>
+            </div>
+          </div>
+
+          <div class="step-timeline" id="udpTimeline"></div>
+
+          <div class="ctrl-bar">
+            <div class="ctrl-group">
+              <button class="ctrl-btn" id="udpPrev">◀ Prev</button>
+              <button class="ctrl-btn primary udp-primary" id="udpPlayPause">▶ Play</button>
+              <button class="ctrl-btn" id="udpNext">Next ▶</button>
+              <button class="ctrl-btn" id="udpReplay">↻ Replay</button>
+            </div>
+            <button class="stream-toggle-btn" id="udpStreamBtn">▶ Start Datagram Stream</button>
+          </div>
+
+          <!-- Continuous stream display -->
+          <div id="udpStreamDisplay" class="udp-stream-display hidden">
+            <div class="stream-header">Live UDP Datagram Stream</div>
+            <div id="udpStreamLog" class="stream-log"></div>
+            <div id="udpStreamStats" class="stream-stats">Sent: 0 · Dropped: 0 · Loss: 0%</div>
+          </div>
+        </div>
+
+        <div class="panel inspector-panel">
+          <div class="panel-head">
+            <span class="panel-title-text">Datagram Inspector</span>
+            <span class="badge-proto udp-badge">UDP Datagram</span>
+          </div>
+          <div class="insp-step-card udp-insp-card">
+            <div class="insp-step-title" id="udpInspTitle">UDP — Connectionless Delivery</div>
+            <div class="insp-direction server-dir">Sender → Receiver (No ACK)</div>
+            <p class="insp-desc" id="udpInspDesc">UDP sends datagrams directly to the destination without connection setup. The 8-byte header is minimal for speed.</p>
+          </div>
+          <div class="header-breakdown">
+            <div class="breakdown-title">UDP Header Fields <span class="breakdown-size">8 Bytes (Fixed)</span></div>
+            <div class="field-grid udp-field-grid" id="udpFieldGrid"></div>
+          </div>
+          <div class="edu-callout udp-edu-callout">
+            <div class="callout-icon">⚡</div>
+            <div>
+              <strong>Why UDP for Streaming?</strong>
+              <p>Video/audio streaming tolerates small packet losses but needs low latency. A slightly garbled frame is better than freezing while TCP retransmits. UDP's 8-byte header vs TCP's 20-byte header reduces overhead significantly.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================== -->
+  <!-- SECTION 3: SCENARIOS        -->
+  <!-- ========================== -->
+  <section id="sec-scenarios" class="section">
+    <div class="section-header">
+      <div>
+        <span class="layer-pill">Practical Scenarios</span>
+        <h2>Real-World Protocol Stack Scenarios</h2>
+        <p>See how layers stack together in real network interactions</p>
+      </div>
+    </div>
+
+    <div class="proto-selector">
+      <button class="proto-btn active" data-proto="browsing">🌐 Web Browsing</button>
+      <button class="proto-btn" data-proto="streaming">▶ Video Streaming</button>
+    </div>
+
+    <!-- Browsing Scenario -->
+    <div id="proto-browsing" class="proto-panel active-panel">
+      <div class="scenario-desc-bar">
+        <div class="scenario-icon">🌐</div>
+        <div>
+          <strong>Web Browsing Scenario</strong>
+          <p>When you type a URL in a browser, a full protocol stack is activated: Browser → HTTP → TCP → IP → Web Server</p>
+        </div>
+      </div>
+
+      <!-- Protocol Stack Diagram -->
+      <div class="stack-diagram">
+        <div class="stack-col client-stack">
+          <div class="stack-title">CLIENT SIDE</div>
+          <div class="stack-box app-box">
+            <span class="stack-icon">🌐</span>
+            <span class="stack-name">Browser</span>
+            <span class="stack-layer">Application Layer</span>
+          </div>
+          <div class="stack-arrow">↓</div>
+          <div class="stack-box app-box">
+            <span class="stack-icon">📄</span>
+            <span class="stack-name">HTTP GET Request</span>
+            <span class="stack-layer">L7: HTTP Protocol</span>
+          </div>
+          <div class="stack-arrow">↓</div>
+          <div class="stack-box tcp-box">
+            <span class="stack-icon">🔗</span>
+            <span class="stack-name">TCP Segment</span>
+            <span class="stack-layer">L4: Transport Layer</span>
+          </div>
+          <div class="stack-arrow">↓</div>
+          <div class="stack-box ip-box">
+            <span class="stack-icon">🌍</span>
+            <span class="stack-name">IP Datagram</span>
+            <span class="stack-layer">L3: Network Layer</span>
+          </div>
+        </div>
+
+        <div class="stack-middle">
+          <div class="network-cloud">
+            <div class="cloud-icon">☁️</div>
+            <div class="cloud-label">Internet</div>
+            <div class="cloud-sub">Routers &amp; Links</div>
+          </div>
+          <div class="middle-flow" id="browseFlowLine">
+            <div id="browsePacket" class="scenario-packet hidden">
+              <div class="scen-pkt-icon">📦</div>
+              <div class="scen-pkt-label" id="browsePacketLabel">HTTP</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-col server-stack">
+          <div class="stack-title">SERVER SIDE</div>
+          <div class="stack-box app-box">
+            <span class="stack-icon">🖥️</span>
+            <span class="stack-name">Web Server</span>
+            <span class="stack-layer">Application Layer</span>
+          </div>
+          <div class="stack-arrow">↑</div>
+          <div class="stack-box app-box">
+            <span class="stack-icon">📑</span>
+            <span class="stack-name">HTTP 200 Response</span>
+            <span class="stack-layer">L7: HTTP Protocol</span>
+          </div>
+          <div class="stack-arrow">↑</div>
+          <div class="stack-box tcp-box">
+            <span class="stack-icon">🔗</span>
+            <span class="stack-name">TCP Segment</span>
+            <span class="stack-layer">L4: Transport Layer</span>
+          </div>
+          <div class="stack-arrow">↑</div>
+          <div class="stack-box ip-box">
+            <span class="stack-icon">🌍</span>
+            <span class="stack-name">IP Datagram</span>
+            <span class="stack-layer">L3: Network Layer</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-steps-panel">
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title-text">Browsing Scenario — Step-by-Step Flow</span>
+            <button class="run-btn" id="runBrowse" style="font-size:12px;padding:8px 16px;">▶ Animate</button>
+          </div>
+          <div id="browseSteps" class="scenario-steps-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Streaming Scenario -->
+    <div id="proto-streaming" class="proto-panel">
+      <div class="scenario-desc-bar streaming-desc">
+        <div class="scenario-icon">▶</div>
+        <div>
+          <strong>Video Streaming Scenario</strong>
+          <p>Streaming apps like YouTube/Netflix use: Streaming App → TCP/UDP → IP → Server</p>
+        </div>
+      </div>
+
+      <div class="stack-diagram">
+        <div class="stack-col client-stack">
+          <div class="stack-title">CLIENT SIDE</div>
+          <div class="stack-box stream-box">
+            <span class="stack-icon">📺</span>
+            <span class="stack-name">Streaming App</span>
+            <span class="stack-layer">Application Layer</span>
+          </div>
+          <div class="stack-arrow">↓</div>
+          <div class="stack-box stream-box">
+            <span class="stack-icon">🎥</span>
+            <span class="stack-name">Video Request</span>
+            <span class="stack-layer">L7: HTTP/DASH/HLS</span>
+          </div>
+          <div class="stack-arrow">↓</div>
+          <div class="stack-box udp-box">
+            <span class="stack-icon">⚡</span>
+            <span class="stack-name">UDP Datagram</span>
+            <span class="stack-layer">L4: Transport (UDP/RTP)</span>
+          </div>
+          <div class="stack-arrow">↓</div>
+          <div class="stack-box ip-box">
+            <span class="stack-icon">🌍</span>
+            <span class="stack-name">IP Datagram</span>
+            <span class="stack-layer">L3: Network Layer</span>
+          </div>
+        </div>
+
+        <div class="stack-middle">
+          <div class="network-cloud stream-cloud">
+            <div class="cloud-icon">☁️</div>
+            <div class="cloud-label">CDN / Internet</div>
+            <div class="cloud-sub">Content Delivery</div>
+          </div>
+          <div class="middle-flow" id="streamFlowLine">
+            <div id="streamPacket" class="scenario-packet hidden">
+              <div class="scen-pkt-icon">🎬</div>
+              <div class="scen-pkt-label" id="streamPacketLabel">UDP</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-col server-stack">
+          <div class="stack-title">SERVER SIDE</div>
+          <div class="stack-box stream-box">
+            <span class="stack-icon">🗄️</span>
+            <span class="stack-name">Media Server</span>
+            <span class="stack-layer">Application Layer</span>
+          </div>
+          <div class="stack-arrow">↑</div>
+          <div class="stack-box stream-box">
+            <span class="stack-icon">🎞️</span>
+            <span class="stack-name">Video Chunks</span>
+            <span class="stack-layer">L7: Segmented Media</span>
+          </div>
+          <div class="stack-arrow">↑</div>
+          <div class="stack-box udp-box">
+            <span class="stack-icon">⚡</span>
+            <span class="stack-name">UDP Datagram</span>
+            <span class="stack-layer">L4: Transport (UDP)</span>
+          </div>
+          <div class="stack-arrow">↑</div>
+          <div class="stack-box ip-box">
+            <span class="stack-icon">🌍</span>
+            <span class="stack-name">IP Datagram</span>
+            <span class="stack-layer">L3: Network Layer</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-steps-panel">
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title-text">Streaming Scenario — Step-by-Step Flow</span>
+            <button class="run-btn" id="runStream" style="font-size:12px;padding:8px 16px;">▶ Animate</button>
+          </div>
+          <div id="streamSteps" class="scenario-steps-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ -->
+  <!-- SECTION 4: COMPARE           -->
+  <!-- ============================ -->
+  <section id="sec-compare" class="section">
+    <div class="section-header">
+      <div>
+        <span class="layer-pill">Protocol Reference</span>
+        <h2>Protocol Comparison &amp; Reference</h2>
+        <p>Side-by-side comparison of all covered protocols</p>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <!-- TCP vs UDP -->
+      <div class="panel compare-panel full-width-panel">
+        <div class="panel-head">
+          <span class="panel-title-text">TCP vs UDP — Transport Layer Comparison</span>
+          <span class="badge-proto">RFC 793 vs RFC 768</span>
+        </div>
+        <div class="table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th class="tcp-col">🔗 TCP</th>
+                <th class="udp-col">⚡ UDP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Full Name</td><td>Transmission Control Protocol</td><td>User Datagram Protocol</td></tr>
+              <tr><td>Connection</td><td class="good">Connection-Oriented (3-way handshake)</td><td class="warn">Connectionless (No handshake)</td></tr>
+              <tr><td>Reliability</td><td class="good">Guaranteed delivery with ACKs</td><td class="bad">Best-effort, no guarantee</td></tr>
+              <tr><td>Ordering</td><td class="good">In-order delivery</td><td class="bad">May arrive out-of-order</td></tr>
+              <tr><td>Error Checking</td><td class="good">Checksum + Retransmission</td><td class="warn">Checksum only (no retransmit)</td></tr>
+              <tr><td>Flow Control</td><td class="good">Yes (Sliding Window)</td><td class="bad">No</td></tr>
+              <tr><td>Congestion Control</td><td class="good">Yes (AIMD, Slow Start)</td><td class="bad">No</td></tr>
+              <tr><td>Header Size</td><td class="warn">20–60 Bytes</td><td class="good">8 Bytes (Fixed)</td></tr>
+              <tr><td>Speed</td><td class="warn">Slower (overhead)</td><td class="good">Faster (low overhead)</td></tr>
+              <tr><td>Use Cases</td><td>HTTP, SMTP, FTP, SSH</td><td>DNS, Streaming, VoIP, Gaming</td></tr>
+              <tr><td>RFC</td><td>RFC 793 (1981)</td><td>RFC 768 (1980)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Application Layer Protocols -->
+      <div class="panel compare-panel full-width-panel">
+        <div class="panel-head">
+          <span class="panel-title-text">Application Layer Protocols — DNS vs HTTP vs SMTP</span>
+          <span class="badge-proto">Layer 7 Reference</span>
+        </div>
+        <div class="table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th class="dns-col">🔍 DNS</th>
+                <th class="http-col">📄 HTTP</th>
+                <th class="smtp-col">✉️ SMTP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Purpose</td><td>Domain name resolution</td><td>Web content transfer</td><td>Email transmission</td></tr>
+              <tr><td>RFC</td><td>RFC 1035</td><td>RFC 9110</td><td>RFC 5321</td></tr>
+              <tr><td>Transport</td><td>UDP (mostly) / TCP</td><td>TCP</td><td>TCP</td></tr>
+              <tr><td>Port</td><td>53</td><td>80 / 443 (HTTPS)</td><td>25 / 587</td></tr>
+              <tr><td>Message Type</td><td>Query/Response</td><td>Request/Response</td><td>Command/Response</td></tr>
+              <tr><td>Stateless?</td><td class="good">Yes</td><td class="good">Yes (HTTP/1.1)</td><td class="bad">No (session-based)</td></tr>
+              <tr><td>Key Commands</td><td>A, AAAA, MX, CNAME</td><td>GET, POST, PUT, DELETE</td><td>EHLO, MAIL FROM, RCPT TO, DATA</td></tr>
+              <tr><td>Response Codes</td><td>RCODE 0 (NoError), 3 (NXDomain)</td><td>200, 301, 404, 500</td><td>220, 250, 354, 221, 550</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <strong>Application &amp; Transport Layer Protocol Visualizer</strong><br>
+        <span>BTech Computer Networks Project · Simulated Protocol Exchanges for Educational Purposes</span>
+      </div>
+      <div class="footer-tags">
+        <span class="ftag">DNS</span>
+        <span class="ftag">HTTP</span>
+        <span class="ftag">SMTP</span>
+        <span class="ftag">TCP</span>
+        <span class="ftag">UDP</span>
+        <span class="ftag">OSI Model</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
